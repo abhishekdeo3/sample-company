@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8180:8080
+
+  notifier:
+    image: 'greenbone/exercise-admin-notification'
+    ports:
+      - 8080:8080
