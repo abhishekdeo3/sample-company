@@ -1,1 +1,1 @@
-# simple-company
+# sample-company
