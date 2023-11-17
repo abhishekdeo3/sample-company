@@ -3,7 +3,8 @@ package com.greenbone.samplecompany.service;
 import com.greenbone.samplecompany.dto.Computer;
 import com.greenbone.samplecompany.dto.Computers;
 import com.greenbone.samplecompany.dto.CrudComputerDto;
-import com.greenbone.samplecompany.exception.NotFound;
+import com.greenbone.samplecompany.dto.UpdateEmployeeComputer;
+import com.greenbone.samplecompany.exception.NotFoundException;
 import com.greenbone.samplecompany.model.ComputerEntity;
 import com.greenbone.samplecompany.model.EmployeeEntity;
 import com.greenbone.samplecompany.repository.ComputerRepository;
@@ -36,7 +37,7 @@ public class ComputerService {
         if (crudComputerDto.employeeId() != null) {
 
             EmployeeEntity employeeEntity = employeeRepository.findById(crudComputerDto.employeeId())
-                    .orElseThrow(() -> new NotFound(String.format("Employee with ID %s not found", crudComputerDto.employeeId())));
+                    .orElseThrow(() -> new NotFoundException(String.format("Employee with ID %s not found", crudComputerDto.employeeId())));
 
             computerEntity.setEmployeeEntity(employeeEntity);
         }
@@ -54,7 +55,7 @@ public class ComputerService {
         return computerEntity.map(entity -> new Computer(entity.getComputerId(), entity.getMacAddress(),
                 entity.getComputerName(), entity.getIpAddress(),
                 entity.getEmployeeEntity() != null ? entity.getEmployeeEntity().getAbbreviation() : null,
-                entity.getDescription())).orElseThrow(() -> new NotFound(String.format("Computer with ID %s not found", computerId)));
+                entity.getDescription())).orElseThrow(() -> new NotFoundException(String.format("Computer with ID %s not found", computerId)));
     }
 
     public Computers getAllComputers() {
@@ -74,7 +75,7 @@ public class ComputerService {
         Optional<ComputerEntity> computerEntity = computerRepository.findById(computerId);
 
         if (computerEntity.isEmpty()) {
-            throw new NotFound(String.format("Computer with ID %s not found", computerId));
+            throw new NotFoundException(String.format("Computer with ID %s not found", computerId));
         } else {
             computerEntity.get().setComputerName(crudComputerDto.computerName());
             computerEntity.get().setMacAddress(crudComputerDto.macAddress());
@@ -87,7 +88,7 @@ public class ComputerService {
                 if (employeeEntity.isPresent()) {
                     computerEntity.get().setEmployeeEntity(employeeEntity.get());
                 } else {
-                    throw new NotFound(String.format("Employee with ID %s not found", crudComputerDto.employeeId()));
+                    throw new NotFoundException(String.format("Employee with ID %s not found", crudComputerDto.employeeId()));
                 }
             }
 
@@ -103,9 +104,37 @@ public class ComputerService {
         Optional<ComputerEntity> computerEntity = computerRepository.findById(computerId);
 
         if (computerEntity.isEmpty()) {
-            throw new NotFound(String.format("Computer with ID %s not found", computerId));
+            throw new NotFoundException(String.format("Computer with ID %s not found", computerId));
         } else {
             computerRepository.deleteById(computerEntity.get().getComputerId());
+        }
+    }
+
+    public Computer updateEmployeeComputer(Long computerId, UpdateEmployeeComputer updateEmployeeComputer) {
+
+        Optional<ComputerEntity> computerEntity = computerRepository.findById(computerId);
+
+        if (computerEntity.isEmpty()) {
+            throw new NotFoundException(String.format("Computer with ID %s not found", computerId));
+        } else {
+
+            if (updateEmployeeComputer.employeeId() != null) {
+
+                Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(updateEmployeeComputer.employeeId());
+
+                if (employeeEntity.isPresent()) {
+                    computerEntity.get().setEmployeeEntity(employeeEntity.get());
+                } else {
+                    throw new NotFoundException(String.format("Employee with ID %s not found", updateEmployeeComputer.employeeId()));
+                }
+            } else {
+                computerEntity.get().setEmployeeEntity(null);
+            }
+
+            ComputerEntity saved = computerRepository.save(computerEntity.get());
+
+            return new Computer(saved.getComputerId(), saved.getMacAddress(), saved.getComputerName(), saved.getIpAddress(),
+                    saved.getEmployeeEntity() != null ? saved.getEmployeeEntity().getAbbreviation() : null, saved.getDescription());
         }
     }
 }

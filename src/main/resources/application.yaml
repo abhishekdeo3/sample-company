@@ -10,7 +10,7 @@ spring:
   jpa:
     database: postgresql
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:
@@ -22,6 +22,11 @@ spring:
     baseline-on-migrate: true
     baseline-version: 0
     schemas: sample_company
+
+  security:
+    user:
+      name: "test"
+      password: "{bcrypt}$2a$08$TIvt7DUNlNXrWB6fR6Jfj.0APMa9R5QfIi1KmWDvRbkYE50qQ6Mja"
 
 springdoc:
   swagger-ui:

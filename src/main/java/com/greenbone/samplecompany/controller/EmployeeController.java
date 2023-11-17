@@ -1,6 +1,7 @@
 package com.greenbone.samplecompany.controller;
 
 import com.greenbone.samplecompany.dto.Computers;
+import com.greenbone.samplecompany.dto.Employee;
 import com.greenbone.samplecompany.service.EmployeeService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +19,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{employeeId}")
-    public Computers getComputersByEmployee(@PathVariable Long employeeId) {
+    public Employee getComputersByEmployee(@PathVariable Long employeeId) {
 
         return employeeService.getComputersByEmployeeId(employeeId);
     }

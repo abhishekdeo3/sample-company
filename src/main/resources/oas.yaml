@@ -1,15 +1,439 @@
-openapi: 3.0.3
+openapi: 3.0.1
 info:
-  title: Sample Company
-  description: Sample Company Administrator API
+  title: Sample Company Administration API
+  description: This API administrates the Computers. Provides CRUD operation end-point. Main BOs are Computers and Employees.
+  contact:
+    name: Sample Company Administration API
+    url: https://sample-company-xxx.com/
+    email: sample-company@gyoo.com
   version: 1.0.0
+  x-business-objects:
+    - Administration
+  x-business-domain: Administration
+  x-product: Administration API
 servers:
-  - url: 'https'
+  - url: http://localhost:8091/
+    description: Sample Company local Environment
+security:
+  - Basic-Authentication: []
 paths:
-  '/computers/{computerId}':
+  /computers/{computerId}:
     get:
       tags:
+        - computer-controller
+      operationId: get
+      parameters:
+        - name: computerId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Computer'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          description: default response
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    put:
+      tags:
+        - computer-controller
+      operationId: update
+      parameters:
+        - name: computerId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrudComputerDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Computer'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          description: default response
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    delete:
+      tags:
+        - computer-controller
+      operationId: delete
+      parameters:
+        - name: computerId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          description: default response
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    patch:
+      tags:
+        - computer-controller
+      operationId: updateEmployeeComputer
+      parameters:
+        - name: computerId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEmployeeComputer'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Computer'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          description: default response
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /computers:
+    get:
+      tags:
+        - computer-controller
+      operationId: getAll
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Computers'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          description: default response
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    post:
+      tags:
+        - computer-controller
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrudComputerDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Computer'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          description: default response
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /employees/{employeeId}:
+    get:
+      tags:
+        - employee-controller
+      operationId: getComputersByEmployee
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        default:
+          description: default response
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
 components:
   schemas:
-    computer:
-
+    Problem:
+      required:
+        - status
+      type: object
+      properties:
+        status:
+          type: integer
+          description: HTTP Status Code
+          format: int32
+          example: 401
+        title:
+          type: string
+          description: Title of Response
+          example: UNAUTHORIZED
+        details:
+          type: string
+          description: Details of the Error
+          example: Invalid Input Provided
+      description: Returns exception response in readable format
+    CrudComputerDto:
+      required:
+        - computer_name
+        - ip_address
+        - mac_address
+      type: object
+      properties:
+        mac_address:
+          type: string
+          description: MAC Address of the ComputerEntity
+          example: AA:5645486:BGGHHH:4564
+        computer_name:
+          type: string
+          description: Name of the ComputerEntity
+          example: TEST2000_HR
+        ip_address:
+          type: string
+          description: IP Address of the ComputerEntity
+          example: 175.56.89.90
+        employee_id:
+          type: integer
+          description: ID of the employee
+          format: int64
+          example: 1123
+        description:
+          type: string
+          description: Any description related to computer or employee
+          example: TEST Machine
+      description: Object for CRUD Operations of Computer
+    Computer:
+      required:
+        - computer_id
+        - computer_name
+        - ip_address
+        - mac_address
+      type: object
+      properties:
+        computer_id:
+          type: integer
+          description: ID of the ComputerEntity
+          format: int64
+          example: 123456
+        mac_address:
+          type: string
+          description: MAC Address of the ComputerEntity
+          example: AA:5645486:BGGHHH:4564
+        computer_name:
+          type: string
+          description: Name of the ComputerEntity
+          example: TEST2000_HR
+        ip_address:
+          type: string
+          description: IP Address of the ComputerEntity
+          example: 175.56.89.90
+        employee_abbreviation:
+          type: string
+          description: Abbreviated name of the employee. It's unique three letters from name of the employee
+          example: mmu
+        description:
+          type: string
+          description: Any description related to computer or employee
+          example: TEST Machine
+      description: Information of the Computer
+    UpdateEmployeeComputer:
+      type: object
+      properties:
+        employee_id:
+          type: integer
+          description: ID of the Employee
+          format: int64
+          example: 1123
+    Computers:
+      type: object
+      properties:
+        computers:
+          type: array
+          description: List of all Computers
+          items:
+            $ref: '#/components/schemas/Computer'
+      description: Computers object with List of all Computers
+    Employee:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: First name of the employee
+          example: John
+        last_name:
+          type: string
+          description: Last name of the employee
+          example: Smith
+        abbreviation:
+          type: string
+          description: Unique abbreviation of the employee name
+          example: jsm
+        computers:
+          $ref: '#/components/schemas/Computers'
+      description: Employee information
+  securitySchemes:
+    Basic-Authentication:
+      type: http
+      scheme: basic

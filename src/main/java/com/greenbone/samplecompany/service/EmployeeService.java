@@ -2,7 +2,8 @@ package com.greenbone.samplecompany.service;
 
 import com.greenbone.samplecompany.dto.Computer;
 import com.greenbone.samplecompany.dto.Computers;
-import com.greenbone.samplecompany.exception.NotFound;
+import com.greenbone.samplecompany.dto.Employee;
+import com.greenbone.samplecompany.exception.NotFoundException;
 import com.greenbone.samplecompany.model.ComputerEntity;
 import com.greenbone.samplecompany.model.EmployeeEntity;
 import com.greenbone.samplecompany.repository.EmployeeRepository;
@@ -22,26 +23,27 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    public Computers getComputersByEmployeeId(Long employeeId) {
+    public Employee getComputersByEmployeeId(Long employeeId) {
 
         Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(employeeId);
 
         if (employeeEntity.isEmpty()) {
-            throw new NotFound(String.format("Employee with ID %s not found", employeeId));
+            throw new NotFoundException(String.format("Employee with ID %s not found", employeeId));
         }
 
         Set<ComputerEntity> computerEntitySet = employeeEntity.get().getComputerEntitySet();
 
+        List<Computer> computerList = new ArrayList<>();
+
         if (!computerEntitySet.isEmpty()) {
 
-            List<Computer> computerList = computerEntitySet.stream().map(computerEntity ->
+            computerList = computerEntitySet.stream().map(computerEntity ->
                     new Computer(computerEntity.getComputerId(), computerEntity.getMacAddress(),
                             computerEntity.getComputerName(), computerEntity.getIpAddress(),
                             computerEntity.getEmployeeEntity().getAbbreviation(), computerEntity.getDescription())).toList();
-
-            return new Computers(computerList);
         }
 
-        return new Computers(new ArrayList<>());
+        return new Employee(employeeEntity.get().getFirstName(), employeeEntity.get().getLastName(),
+                employeeEntity.get().getAbbreviation(), new Computers(computerList));
     }
 }
