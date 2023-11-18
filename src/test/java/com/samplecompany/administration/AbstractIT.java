@@ -1,6 +1,8 @@
 package com.samplecompany.administration;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextInitializer;
@@ -18,8 +20,14 @@ public abstract class AbstractIT {
 
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:15");
 
-    static {
+    @BeforeAll
+    static void init() {
         postgreSQLContainer.start();
+    }
+
+    @AfterAll
+    static void cleanup() {
+        postgreSQLContainer.stop();
     }
 
     public static class DockerPostgresDataSourceInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {

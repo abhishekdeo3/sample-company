@@ -10,6 +10,7 @@ import com.samplecompany.administration.model.EmployeeEntity;
 import com.samplecompany.administration.repository.ComputerRepository;
 import com.samplecompany.administration.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,7 @@ public class ComputerService {
         this.employeeRepository = employeeRepository;
     }
 
+    @Transactional
     public Computer createComputer(CrudComputerDto crudComputerDto) {
 
         ComputerEntity computerEntity = new ComputerEntity();
@@ -48,6 +50,7 @@ public class ComputerService {
                 saved.getEmployeeEntity() != null ? saved.getEmployeeEntity().getAbbreviation() : null, saved.getDescription());
     }
 
+    @Transactional(readOnly = true)
     public Computer getComputerDetails(Long computerId) {
 
         Optional<ComputerEntity> computerEntity = computerRepository.findById(computerId);
@@ -58,6 +61,7 @@ public class ComputerService {
                 entity.getDescription())).orElseThrow(() -> new NotFoundException(String.format("Computer with ID %s not found", computerId)));
     }
 
+    @Transactional(readOnly = true)
     public Computers getAllComputers() {
 
         List<ComputerEntity> computerEntities = computerRepository.findAll();
@@ -70,6 +74,7 @@ public class ComputerService {
         return new Computers(computerList);
     }
 
+    @Transactional
     public Computer updateComputer(Long computerId, CrudComputerDto crudComputerDto) {
 
         Optional<ComputerEntity> computerEntity = computerRepository.findById(computerId);
@@ -99,6 +104,7 @@ public class ComputerService {
         }
     }
 
+    @Transactional
     public void delete(Long computerId) {
 
         Optional<ComputerEntity> computerEntity = computerRepository.findById(computerId);
@@ -110,6 +116,7 @@ public class ComputerService {
         }
     }
 
+    @Transactional
     public Computer updateEmployeeComputer(Long computerId, UpdateEmployeeComputer updateEmployeeComputer) {
 
         Optional<ComputerEntity> computerEntity = computerRepository.findById(computerId);

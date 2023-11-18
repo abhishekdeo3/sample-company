@@ -8,6 +8,7 @@ import com.samplecompany.administration.model.ComputerEntity;
 import com.samplecompany.administration.model.EmployeeEntity;
 import com.samplecompany.administration.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
+    @Transactional(readOnly = true)
     public Employee getComputersByEmployeeId(Long employeeId) {
 
         Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(employeeId);

@@ -8,32 +8,29 @@ import com.samplecompany.administration.repository.ComputerRepository;
 import com.samplecompany.administration.repository.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class ComputerServiceTest extends AbstractIT {
-
-    @Autowired
-    private ComputerService computerService;
-
+class ComputerServiceTest extends AbstractIT {
     @Autowired
     private ComputerRepository computerRepository;
 
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    private ComputerService computerService;
+
     @BeforeEach
     void cleanUp() {
+
         computerRepository.deleteAll();
+        employeeRepository.deleteAll();
+        computerService = new ComputerService(computerRepository, employeeRepository);
     }
 
     @Test
