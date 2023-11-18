@@ -5,7 +5,7 @@ CREATE SEQUENCE computer_id_seq START 2000;
 CREATE TABLE IF NOT EXISTS computer
 (
 
-    id            INTEGER DEFAULT nextval('computer_id_seq') PRIMARY KEY,
+    id            BIGINT DEFAULT nextval('computer_id_seq') PRIMARY KEY,
     mac_address   VARCHAR(255) NOT NULL UNIQUE,
     computer_name VARCHAR(255) NOT NULL UNIQUE,
     ip_address    VARCHAR(255) NOT NULL UNIQUE,
