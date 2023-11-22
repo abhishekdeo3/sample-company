@@ -4,9 +4,7 @@ spring:
   application:
     name: sample-company-api
   datasource:
-    hikari:
-      jdbc-url: jdbc:postgresql://localhost:5432/mydatabase?user=myuser&password=secret
-      schema: sample_company
+    url: jdbc:postgresql://localhost:5432/mydatabase?user=myuser&password=secret
   jpa:
     database: postgresql
     hibernate:
@@ -14,7 +12,6 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: sample_company
     open-in-view: true
   flyway:
@@ -62,6 +59,10 @@ logging:
   level:
     org.hibernate:
       SQL: DEBUG
+
+notifier-gateway:
+  url: http://localhost:8080/api/notify
+  max-computer-count: 3
 
 ---
 spring:

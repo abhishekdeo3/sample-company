@@ -27,8 +27,7 @@ public class ComputerEntity {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "ID")
     private EmployeeEntity employeeEntity;
-
 }

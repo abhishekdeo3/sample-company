@@ -5,6 +5,4 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: validate
-  flyway:
-    enabled: false
+      ddl-auto: create-drop

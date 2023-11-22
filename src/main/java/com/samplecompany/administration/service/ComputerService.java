@@ -1,5 +1,6 @@
 package com.samplecompany.administration.service;
 
+import com.samplecompany.administration.configuration.properties.NotifierGateway;
 import com.samplecompany.administration.dto.Computer;
 import com.samplecompany.administration.dto.Computers;
 import com.samplecompany.administration.dto.CrudComputerDto;
@@ -9,6 +10,7 @@ import com.samplecompany.administration.model.ComputerEntity;
 import com.samplecompany.administration.model.EmployeeEntity;
 import com.samplecompany.administration.repository.ComputerRepository;
 import com.samplecompany.administration.repository.EmployeeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,15 +18,22 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ComputerService {
 
     private final ComputerRepository computerRepository;
 
     private final EmployeeRepository employeeRepository;
 
-    public ComputerService(ComputerRepository computerRepository, EmployeeRepository employeeRepository) {
+    private final Notifier notifier;
+
+    private final NotifierGateway notifierGateway;
+
+    public ComputerService(ComputerRepository computerRepository, EmployeeRepository employeeRepository, Notifier notifier, NotifierGateway notifierGateway) {
         this.computerRepository = computerRepository;
         this.employeeRepository = employeeRepository;
+        this.notifier = notifier;
+        this.notifierGateway = notifierGateway;
     }
 
     @Transactional
@@ -45,6 +54,13 @@ public class ComputerService {
         }
 
         ComputerEntity saved = computerRepository.save(computerEntity);
+
+        if (saved.getEmployeeEntity() != null) {
+            if (isEmployeeHavingMultipleComputers(saved.getEmployeeEntity())) {
+                Notifier.NotifierBody notifierBody = notifier.callNotifier(saved.getEmployeeEntity());
+                log.warn("Employee {} has three or more computers assigned!", notifierBody.employeeAbbreviation());
+            }
+        }
 
         return new Computer(saved.getComputerId(), saved.getMacAddress(), saved.getComputerName(), saved.getIpAddress(),
                 saved.getEmployeeEntity() != null ? saved.getEmployeeEntity().getAbbreviation() : null, saved.getDescription());
@@ -99,6 +115,13 @@ public class ComputerService {
 
             ComputerEntity saved = computerRepository.save(computerEntity.get());
 
+            if (saved.getEmployeeEntity() != null) {
+                if (isEmployeeHavingMultipleComputers(saved.getEmployeeEntity())) {
+                    Notifier.NotifierBody notifierBody = notifier.callNotifier(saved.getEmployeeEntity());
+                    log.warn("Employee {} has three or more computers assigned!", notifierBody.employeeAbbreviation());
+                }
+            }
+
             return new Computer(saved.getComputerId(), saved.getMacAddress(), saved.getComputerName(), saved.getIpAddress(),
                     saved.getEmployeeEntity() != null ? saved.getEmployeeEntity().getAbbreviation() : null, saved.getDescription());
         }
@@ -140,8 +163,24 @@ public class ComputerService {
 
             ComputerEntity saved = computerRepository.save(computerEntity.get());
 
+            if (saved.getEmployeeEntity() != null) {
+                if (isEmployeeHavingMultipleComputers(saved.getEmployeeEntity())) {
+                    Notifier.NotifierBody notifierBody = notifier.callNotifier(saved.getEmployeeEntity());
+                    log.warn("Employee {} has three or more computers assigned!", notifierBody.employeeAbbreviation());
+                }
+            }
+
             return new Computer(saved.getComputerId(), saved.getMacAddress(), saved.getComputerName(), saved.getIpAddress(),
                     saved.getEmployeeEntity() != null ? saved.getEmployeeEntity().getAbbreviation() : null, saved.getDescription());
         }
+    }
+
+    private boolean isEmployeeHavingMultipleComputers(EmployeeEntity employeeEntity) {
+
+        Optional<EmployeeEntity> employee = employeeRepository
+                .getEmployeesWithMoreThanThreeComputers(employeeEntity.getEmployeeId(),
+                        notifierGateway.getMaxComputerCount());
+
+        return employee.isPresent();
     }
 }

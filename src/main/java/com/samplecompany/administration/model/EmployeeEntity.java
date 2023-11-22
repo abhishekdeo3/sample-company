@@ -26,6 +26,6 @@ public class EmployeeEntity {
     @Column(name = "ABBREVIATION")
     private String abbreviation;
 
-    @OneToMany(mappedBy = "employeeEntity")
+    @OneToMany(mappedBy = "employeeEntity", fetch = FetchType.EAGER)
     private Set<ComputerEntity> computerEntitySet;
 }
