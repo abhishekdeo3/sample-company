@@ -176,7 +176,7 @@ class ComputerServiceTest {
     }
 
     @Test
-    void updateEmployeeComputerTest() {
+    void updateEmployeeComputerTest_assignComputerToEmployee() {
 
         ComputerEntity computer1 = saveComputerEntity1();
         ComputerEntity computer2 = saveComputerEntity3();
@@ -194,32 +194,87 @@ class ComputerServiceTest {
 
         Optional<ComputerEntity> computerEntity1 = computerRepository.findById(computer1.getComputerId());
         assertThat(computerEntity1.get().getEmployeeEntity().getEmployeeId()).isEqualTo(employeeEntity.get().getEmployeeId());
+    }
+
+    @Test
+    void updateEmployeeComputerTest_removeComputerFromEmployee() {
+
+        ComputerEntity computer2 = saveComputerEntity3();
+
+        UpdateEmployeeComputer updateEmployeeComputer = new UpdateEmployeeComputer(null);
+
+        Computer updated = computerService.updateEmployeeComputer(computer2.getComputerId(), updateEmployeeComputer);
+
+        assertThat(updated.computerId()).isEqualTo(computer2.getComputerId());
+        assertThat(updated.employeeAbbreviation()).isNull();
+
+        Optional<ComputerEntity> computerEntity2 = computerRepository.findById(computer2.getComputerId());
+        assertThat(computerEntity2.get().getEmployeeEntity()).isNull();
     }
 
 
     @Test
-    void updateEmployeeComputerTest_removeFromEmployee() {
+    void updateEmployeeComputerTest_removeFromEmployeeAssignToOther() {
 
         ComputerEntity computer1 = saveComputerEntity1();
         ComputerEntity computer2 = saveComputerEntity3();
 
-        Optional<EmployeeEntity> employeeEntity  = employeeRepository.findById(computer2.getEmployeeEntity().getEmployeeId());
+        Optional<EmployeeEntity> employeeEntityOptional1  = employeeRepository.findById(computer2.getEmployeeEntity().getEmployeeId());
+        UpdateEmployeeComputer updateEmployeeComputer1 = new UpdateEmployeeComputer(employeeEntityOptional1.get().getEmployeeId());
+        Computer computerUpdate1 = computerService.updateEmployeeComputer(computer1.getComputerId(), updateEmployeeComputer1);
+        Optional<EmployeeEntity> employeeEntityOptional = employeeRepository.findById(employeeEntityOptional1.get().getEmployeeId());
 
-        assertThat(computer1.getEmployeeEntity()).isNull();
+        assertThat(computerUpdate1.computerId()).isEqualTo(computer1.getComputerId());
+        assertThat(computerUpdate1.employeeAbbreviation()).isEqualTo(employeeEntityOptional1.get().getAbbreviation());
+        assertThat(employeeEntityOptional.get().getComputerEntitySet()).hasSize(2);
 
-        UpdateEmployeeComputer updateEmployeeComputer = new UpdateEmployeeComputer(computer2.getEmployeeEntity().getEmployeeId());
+        EmployeeEntity employeeEntity2 = getEmployeeEntity2();
 
-        Computer updated = computerService.updateEmployeeComputer(computer1.getComputerId(), updateEmployeeComputer);
+        UpdateEmployeeComputer updateEmployeeComputer2 = new UpdateEmployeeComputer(employeeEntity2.getEmployeeId());
+        Computer computerUpdate2 = computerService.updateEmployeeComputer(computer1.getComputerId(), updateEmployeeComputer2);
+        Optional<EmployeeEntity> employeeEntityOptional2 = employeeRepository.findById(employeeEntity2.getEmployeeId());
+        Optional<EmployeeEntity> updatedEmployeeEntityOptional1 = employeeRepository.findById(employeeEntityOptional.get().getEmployeeId());
 
-        assertThat(updated.computerId()).isEqualTo(computer1.getComputerId());
-        assertThat(updated.employeeAbbreviation()).isEqualTo(employeeEntity.get().getAbbreviation());
+        assertThat(computerUpdate2.employeeAbbreviation()).isEqualTo(employeeEntity2.getAbbreviation());
+        assertThat(employeeEntityOptional2.get().getComputerEntitySet()).hasSize(1);
+        assertThat(updatedEmployeeEntityOptional1.get().getComputerEntitySet()).hasSize(1);
 
-        Optional<ComputerEntity> computerEntity1 = computerRepository.findById(computer1.getComputerId());
-        assertThat(computerEntity1.get().getEmployeeEntity().getEmployeeId()).isEqualTo(employeeEntity.get().getEmployeeId());
+        UpdateEmployeeComputer updateEmployeeComputer3 = new UpdateEmployeeComputer(employeeEntity2.getEmployeeId());
+        Computer computerUpdate3 = computerService.updateEmployeeComputer(computer2.getComputerId(), updateEmployeeComputer3);
+        Optional<EmployeeEntity> updatedEmployeeEntityOptional2 = employeeRepository.findById(employeeEntity2.getEmployeeId());
+        Optional<EmployeeEntity> againUpdatedEmployeeEntityOptional1 = employeeRepository.findById(employeeEntityOptional.get().getEmployeeId());
 
+        assertThat(computerUpdate3.employeeAbbreviation()).isEqualTo(employeeEntity2.getAbbreviation());
+        assertThat(updatedEmployeeEntityOptional2.get().getComputerEntitySet()).hasSize(2);
+        assertThat(againUpdatedEmployeeEntityOptional1.get().getComputerEntitySet()).isEmpty();
     }
 
+    @Test
+    void updateEmployeeComputerTest_ComputerNotFound() {
 
+        ComputerEntity computer1 = saveComputerEntity1();
+
+        UpdateEmployeeComputer updateEmployeeComputer1 = new UpdateEmployeeComputer(11111111L);
+
+        Exception exception = assertThrows(NotFoundException.class, () ->
+                computerService.updateEmployeeComputer(computer1.getComputerId(), updateEmployeeComputer1));
+
+        assertThat(exception.getMessage()).isEqualTo("Employee with ID 11111111 not found");
+    }
+
+    @Test
+    void updateEmployeeComputerTest_EmployeeNotFound() {
+
+        ComputerEntity computer2 = saveComputerEntity3();
+
+        Optional<EmployeeEntity> employeeEntityOptional1  = employeeRepository.findById(computer2.getEmployeeEntity().getEmployeeId());
+        UpdateEmployeeComputer updateEmployeeComputer1 = new UpdateEmployeeComputer(employeeEntityOptional1.get().getEmployeeId());
+
+        Exception exception = assertThrows(NotFoundException.class, () ->
+                computerService.updateEmployeeComputer(11111111L, updateEmployeeComputer1));
+
+        assertThat(exception.getMessage()).isEqualTo("Computer with ID 11111111 not found");
+    }
 
     private ComputerEntity saveComputerEntity1() {
 
