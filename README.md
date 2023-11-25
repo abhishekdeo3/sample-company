@@ -2,14 +2,24 @@
 
 ## Steps to Run 
 ``` 
-gradle clean build 
+./gradlew clean build 
 docker compose up -d 
 java -jar build/libs/sample-company-0.0.1-SNAPSHOT.jar
 ```
 
 ### Run tests
 ````
-gradle test
+./gradlew test
+````
+
+### Run test coverage
+````
+./gradlew clean build jacocoTestCoverageVerification
+````
+
+### Run Dependency Check
+````
+./gradlew clean build dependencyCheckAnalyze
 ````
 
 ### Database

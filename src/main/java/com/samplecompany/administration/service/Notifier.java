@@ -1,6 +1,6 @@
 package com.samplecompany.administration.service;
 
-import com.samplecompany.administration.configuration.properties.NotifierGateway;
+import com.samplecompany.administration.gateway.NotifierGatewayProperties;
 import com.samplecompany.administration.model.EmployeeEntity;
 import com.samplecompany.administration.repository.EmployeeRepository;
 import jakarta.annotation.PostConstruct;
@@ -19,14 +19,14 @@ public class Notifier {
 
     private final EmployeeRepository employeeRepository;
 
-    private final NotifierGateway notifierGateway;
+    private final NotifierGatewayProperties notifierGatewayProperties;
 
     private final WebClient webClient;
 
-    public Notifier(EmployeeRepository employeeRepository, NotifierGateway notifierGateway,
+    public Notifier(EmployeeRepository employeeRepository, NotifierGatewayProperties notifierGatewayProperties,
                     @Qualifier("NotifierWebClient") WebClient webClient) {
         this.employeeRepository = employeeRepository;
-        this.notifierGateway = notifierGateway;
+        this.notifierGatewayProperties = notifierGatewayProperties;
         this.webClient = webClient;
     }
 
@@ -34,7 +34,7 @@ public class Notifier {
     public void init() {
 
         List<EmployeeEntity> employeeEntities = employeeRepository
-                .getAllEmployeesWithMoreThanThreeComputers(notifierGateway.getMaxComputerCount());
+                .getAllEmployeesWithMoreThanThreeComputers(notifierGatewayProperties.getMaxComputerCount());
 
         if (!CollectionUtils.isEmpty(employeeEntities)) {
 
@@ -50,7 +50,7 @@ public class Notifier {
 
         try {
             return webClient.post()
-                    .uri(notifierGateway.getUrl())
+                    .uri(notifierGatewayProperties.getUrl())
                     .bodyValue(new NotifierBody("warning", employeeEntity.getAbbreviation(),
                             String.format("Employee %s has three or more computers assigned!",
                                     employeeEntity.getAbbreviation())))

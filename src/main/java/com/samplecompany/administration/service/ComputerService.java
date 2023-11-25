@@ -1,6 +1,6 @@
 package com.samplecompany.administration.service;
 
-import com.samplecompany.administration.configuration.properties.NotifierGateway;
+import com.samplecompany.administration.gateway.NotifierGatewayProperties;
 import com.samplecompany.administration.dto.Computer;
 import com.samplecompany.administration.dto.Computers;
 import com.samplecompany.administration.dto.CrudComputerDto;
@@ -27,13 +27,13 @@ public class ComputerService {
 
     private final Notifier notifier;
 
-    private final NotifierGateway notifierGateway;
+    private final NotifierGatewayProperties notifierGatewayProperties;
 
-    public ComputerService(ComputerRepository computerRepository, EmployeeRepository employeeRepository, Notifier notifier, NotifierGateway notifierGateway) {
+    public ComputerService(ComputerRepository computerRepository, EmployeeRepository employeeRepository, Notifier notifier, NotifierGatewayProperties notifierGatewayProperties) {
         this.computerRepository = computerRepository;
         this.employeeRepository = employeeRepository;
         this.notifier = notifier;
-        this.notifierGateway = notifierGateway;
+        this.notifierGatewayProperties = notifierGatewayProperties;
     }
 
     @Transactional
@@ -179,7 +179,7 @@ public class ComputerService {
 
         Optional<EmployeeEntity> employee = employeeRepository
                 .getEmployeesWithMoreThanThreeComputers(employeeEntity.getEmployeeId(),
-                        notifierGateway.getMaxComputerCount());
+                        notifierGatewayProperties.getMaxComputerCount());
 
         return employee.isPresent();
     }

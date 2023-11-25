@@ -24,7 +24,8 @@ public class ComputerController {
     @PostMapping
     public Computer create(@Valid @RequestBody CrudComputerDto crudComputerDto) {
 
-        if(crudComputerDto == null) {
+        if (crudComputerDto == null || crudComputerDto.computerName() == null || crudComputerDto.ipAddress() == null ||
+                crudComputerDto.macAddress() == null) {
             throw new BadRequestException("Empty Request Sent");
         }
 
@@ -46,7 +47,8 @@ public class ComputerController {
     @PutMapping("/{computerId}")
     public Computer update(@PathVariable Long computerId, @Valid @RequestBody CrudComputerDto crudComputerDto) {
 
-        if(crudComputerDto == null) {
+        if (crudComputerDto == null || crudComputerDto.computerName() == null ||
+                crudComputerDto.ipAddress() == null || crudComputerDto.macAddress() == null) {
             throw new BadRequestException("Empty Request Sent");
         }
 
@@ -63,7 +65,7 @@ public class ComputerController {
     public Computer updateEmployeeComputer(@PathVariable Long computerId,
                                            @Valid @RequestBody UpdateEmployeeComputer updateEmployeeComputer) {
 
-        if(updateEmployeeComputer == null) {
+        if (updateEmployeeComputer == null) {
             throw new BadRequestException("Empty Request Sent");
         }
 
