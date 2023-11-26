@@ -6,6 +6,8 @@ import com.samplecompany.administration.dto.Computers;
 import com.samplecompany.administration.dto.Employee;
 import com.samplecompany.administration.exception.NotFoundException;
 import com.samplecompany.administration.service.EmployeeService;
+import com.samplecompany.administration.service.Notifier;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -35,6 +38,14 @@ public class EmployeeControllerTest {
 
     @MockBean
     private EmployeeService employeeService;
+
+    @MockBean
+    private Notifier notifier;
+
+    @BeforeEach
+    public void before() {
+        doNothing().when(notifier).init();
+    }
 
     @Test
     void getComputersByEmployee() throws Exception {

@@ -6,3 +6,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
+notifier-gateway:
+  url: http://someurl:1111/api/notify
+  max-computer-count: 3

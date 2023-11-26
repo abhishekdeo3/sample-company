@@ -9,6 +9,8 @@ import com.samplecompany.administration.dto.UpdateEmployeeComputer;
 import com.samplecompany.administration.model.EmployeeEntity;
 import com.samplecompany.administration.repository.ComputerRepository;
 import com.samplecompany.administration.service.ComputerService;
+import com.samplecompany.administration.service.Notifier;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -40,6 +43,15 @@ public class ComputerControllerTest {
 
     @MockBean
     private ComputerRepository computerRepository;
+
+    @MockBean
+    private Notifier notifier;
+
+    @BeforeEach
+    void cleanUp() {
+        doNothing().when(notifier).init();
+        computerRepository.deleteAll();
+    }
 
     @Test
     void create_throwsBadRequest() throws Exception {
